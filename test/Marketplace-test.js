@@ -160,10 +160,8 @@ describe('NFT Auction contract', () => {
             beforeEach(async () => {
                 // allow marketplace contract to get token
                 await PaymentToken.connect(addr1).approve(Marketplace.address, 10000)
-                
                 // credit addr1 balance with tokens
                 await PaymentToken.transfer(addr1.address, 10000)
-                
                 // place new bid
                 await Marketplace.connect(addr1).bid(0, 500)
             });
@@ -177,6 +175,38 @@ describe('NFT Auction contract', () => {
                 let marketplaceBal = await PaymentToken.balanceOf(Marketplace.address)
                 expect(marketplaceBal).to.equal(500)
             })
+
+            it('Auction info are correctly updated', async () => {
+                let currentBidOwner = await Marketplace.getCurrentBidOwner(0)
+                expect(currentBidOwner).to.equal(addr1.address)
+                let currentBid = await Marketplace.getCurrentBid(0)
+                expect(currentBid).to.equal(500)
+            })
+            
+            it('Current bid owner must be refunded after a new successful bid is placed', async () => {
+                // allow marketplace contract to get token
+                await PaymentToken.connect(addr2).approve(Marketplace.address, 20000)
+                // credit addr2 balance with tokens
+                await PaymentToken.transfer(addr2.address, 20000)
+                // place new bid
+                await Marketplace.connect(addr2).bid(0, 1000)
+                
+                let addr1Bal = await PaymentToken.balanceOf(addr1.address)
+                expect(addr1Bal).to.equal(10000)
+
+                let addr2Bal = await PaymentToken.balanceOf(addr2.address)
+                expect(addr2Bal).to.equal(19000)
+
+                let marketplaceBal = await PaymentToken.balanceOf(Marketplace.address)
+                expect(marketplaceBal).to.equal(1000)
+
+                let currentBidOwner = await Marketplace.getCurrentBidOwner(0)
+                expect(currentBidOwner).to.equal(addr2.address)
+                let currentBid = await Marketplace.getCurrentBid(0)
+                expect(currentBid).to.equal(1000)
+            })
+
+
 
         });
 
