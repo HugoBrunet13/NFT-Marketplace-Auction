@@ -1,5 +1,5 @@
-cache
-artifacts
+cache/
+artifacts/
 
 # Logs
 logs
