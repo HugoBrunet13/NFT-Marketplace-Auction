@@ -1,78 +1,6 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "C:\\Users\\hbrun\\OneDrive\\Documents\\Perso\\Projects\\Goldman Sachs\\NFT-Marketplace\\contracts\\ERC20.sol": {
-      "lastModificationDate": 1631325681739,
-      "contentHash": "c8970032c8ff10edfd0421e78c645253",
-      "sourceName": "contracts/ERC20.sol",
-      "solcConfig": {
-        "version": "0.8.0",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "ERC20",
-        "tokenRecipient"
-      ]
-    },
-    "C:\\Users\\hbrun\\OneDrive\\Documents\\Perso\\Projects\\Goldman Sachs\\NFT-Marketplace\\contracts\\NFTAuction.sol": {
-      "lastModificationDate": 1631327810682,
-      "contentHash": "cfe709736452819ff91d27c5980ff5fb",
-      "sourceName": "contracts/NFTAuction.sol",
-      "solcConfig": {
-        "version": "0.8.0",
-        "settings": {
-          "optimizer": {
-            "enabled": false,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          }
-        }
-      },
-      "imports": [
-        "@openzeppelin/contracts/token/ERC721/ERC721.sol",
-        "./ERC20.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.0"
-      ],
-      "artifacts": [
-        "NFTAuction"
-      ]
-    },
     "C:\\Users\\hbrun\\OneDrive\\Documents\\Perso\\Projects\\Goldman Sachs\\NFT-Marketplace\\node_modules\\@openzeppelin\\contracts\\token\\ERC721\\ERC721.sol": {
       "lastModificationDate": 1631326743728,
       "contentHash": "a4f6dccf3f15b6844e357f737a572388",
@@ -391,6 +319,149 @@
       ],
       "artifacts": [
         "IERC165"
+      ]
+    },
+    "C:\\Users\\hbrun\\OneDrive\\Documents\\Perso\\Projects\\Goldman Sachs\\NFT-Marketplace\\contracts\\ERC20.sol": {
+      "lastModificationDate": 1631329900575,
+      "contentHash": "c8970032c8ff10edfd0421e78c645253",
+      "sourceName": "contracts/ERC20.sol",
+      "solcConfig": {
+        "version": "0.8.0",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "ERC20",
+        "tokenRecipient"
+      ]
+    },
+    "C:\\Users\\hbrun\\OneDrive\\Documents\\Perso\\Projects\\Goldman Sachs\\NFT-Marketplace\\contracts\\Marketplace.sol": {
+      "lastModificationDate": 1631346004140,
+      "contentHash": "cecca17b9b7063cf830a02476310aa8b",
+      "sourceName": "contracts/Marketplace.sol",
+      "solcConfig": {
+        "version": "0.8.0",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./ERC20.sol",
+        "./NFTCollection.sol",
+        "hardhat/console.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "Marketplace"
+      ]
+    },
+    "C:\\Users\\hbrun\\OneDrive\\Documents\\Perso\\Projects\\Goldman Sachs\\NFT-Marketplace\\contracts\\NFTCollection.sol": {
+      "lastModificationDate": 1631344952289,
+      "contentHash": "f195d901c3b7396b592444c056668678",
+      "sourceName": "contracts/NFTCollection.sol",
+      "solcConfig": {
+        "version": "0.8.0",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC721/ERC721.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "NFTCollection"
+      ]
+    },
+    "C:\\Users\\hbrun\\OneDrive\\Documents\\Perso\\Projects\\Goldman Sachs\\NFT-Marketplace\\node_modules\\hardhat\\console.sol": {
+      "lastModificationDate": 1631325201590,
+      "contentHash": "cc4777addd464ea56fa35b1c45df0591",
+      "sourceName": "hardhat/console.sol",
+      "solcConfig": {
+        "version": "0.8.0",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.4.22 <0.9.0"
+      ],
+      "artifacts": [
+        "console"
       ]
     }
   }
