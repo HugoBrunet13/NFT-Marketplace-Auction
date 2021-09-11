@@ -25,7 +25,7 @@ contract NFTCollection is ERC721 {
             URI: _nftURI    
         }));
 
-        uint256 index = allNFTs.length;
+        uint256 index = allNFTs.length - 1;
 
         _safeMint(msg.sender, index);
         

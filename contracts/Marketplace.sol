@@ -23,7 +23,7 @@ contract Marketplace  {
         uint256 nftId;
         address auctionCreator;     
         address payable currentBidOwner;
-        uint256 currentbidPrice;        
+        uint256 currentBidPrice;        
         uint256 endAuction;             
         uint256 bidCount;          
     }
@@ -45,9 +45,14 @@ contract Marketplace  {
         uint256 nftId,
         address mintedBy,     
         address currentBidOwner,
-        uint256 currentbidPrice,
+        uint256 currentBidPrice,
         uint256 endAuction,             
         uint256 bidCount     
+    );
+
+    event NewBidOnAuction(
+        uint256 auctionIndex, 
+        uint256 newBid
     );
 
     constructor (string memory _name) {
@@ -92,9 +97,6 @@ contract Marketplace  {
         // for the given NFT
         // XXX TODO
 
-        
-        // increment auction sequence
-        auctionSequence ++;
 
         //Casting from address to address payable
         address payable currentBidOwner = payable(address(0));
@@ -107,7 +109,7 @@ contract Marketplace  {
             nftId: _nftId,
             auctionCreator: msg.sender, 
             currentBidOwner: currentBidOwner,
-            currentbidPrice: _initialBid,
+            currentBidPrice: _initialBid,
             endAuction: _endAuction,
             bidCount: 0
         });
@@ -115,17 +117,72 @@ contract Marketplace  {
         //update lists
         allAuctions.push(newAuction);
         listedNFTs[_nftId] = newAuction;
-    
+
+        // increment auction sequence
+        auctionSequence ++;
     
         // Trigger event
         emit NewAuction(auctionSequence, _addressNFTCollection,_addressPaymentToken, _nftId, msg.sender,currentBidOwner, _initialBid, _endAuction, 0);
         return auctionSequence;
     }
 
-    // bid()
+    function isOpen(uint256 auctionIndex) private view returns (bool) {
+        Auction storage auction = allAuctions[auctionIndex];
+        if(block.timestamp >= auction.endAuction)
+            return false;
+        return true;
+    }
+
+    /**
+     * Place new bid on a given auction
+     * @param auctionIndex Index of auction
+     * @param newBid New bid price
+     */
+    function bid(uint256 auctionIndex, uint256 newBid) external returns (bool) {
+        require(auctionIndex < allAuctions.length, 'Invalid auction index'); // XXX Optimize
+        Auction storage auction = allAuctions[auctionIndex];
+        // check if auction exist
+        require(auction.auctionCreator != address(0), 'Invalid auction');
+        // check if auction is still open
+        require(isOpen(auctionIndex), "Auction is not open");
+        
+        // check if new bid price is higher than the current one
+        require(newBid>auction.currentBidPrice, 'New bid price must be higher than the current bid');
+        
+        //check if new bidder is not the owner ??
+        // XXX todo
+
+        // get ERC20 token contract
+        ERC20 paymentToken = ERC20(auction.addressPaymentToken);
+        
+        // new bid is better than current bid!
+        
+        // transfer token from newbider account to the marketplace account 
+        // to lock the tokens
+        require(paymentToken.transferFrom(msg.sender, address(this), newBid), 'Tranfer of token failed');
+        
+        //new bid is correct so must refund the current bid owner (if there is one!)
+        if(auction.bidCount > 0) { 
+            paymentToken.transfer(auction.currentBidOwner, auction.currentBidPrice);
+        }
+        
+        // update auction info 
+        address payable newBidOwner = payable(msg.sender);
+        auction.currentBidOwner = newBidOwner;
+        auction.currentBidPrice = newBid;
+        auction.bidCount++;
+
+        // XXX ToDO update mapp?
+
+        emit NewBidOnAuction(auctionIndex, newBid);
+
+        return true;
+        
+    }
+
+
     // claim() 
-    // getAuctionStatus()
-    
+    // get all auction + index?
 
 
 }
