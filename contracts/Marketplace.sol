@@ -64,6 +64,7 @@ contract Marketplace  {
         assembly { size := extcodesize(addr) }
         return size > 0;
     }
+    
 
     // Create new auction
     function createAuction(address _addressNFTCollection,                 
@@ -133,6 +134,16 @@ contract Marketplace  {
         return true;
     }
 
+    function getCurrentBidOwner(uint256 auctionIndex) public view returns (address) {
+        require(auctionIndex < allAuctions.length, "Invalid auction index");
+        return allAuctions[auctionIndex].currentBidOwner;
+    }
+
+    function getCurrentBid(uint256 auctionIndex) public view returns (uint256) {
+        require(auctionIndex < allAuctions.length, "Invalid auction index");
+        return allAuctions[auctionIndex].currentBidPrice;
+    }
+
     /**
      * Place new bid on a given auction
      * @param auctionIndex Index of auction
@@ -148,7 +159,7 @@ contract Marketplace  {
         
         // check if new bid price is higher than the current one
         require(newBid>auction.currentBidPrice, 'New bid price must be higher than the current bid');
-        
+            
         //check if new bidder is not the owner ??
         // XXX todo
 
