@@ -36,7 +36,9 @@ Artifact files for each contracts
 ### Install dependencies and run tests
 1. ` npm install`
 2. `npx hardhat compile` (to compile contracts)
-3. `npx hardhat test` (to run existing unit tests)
+3. `npx hardhat test` (to run existing unit tests)  
+
+**NB:** Run  `npx hardhat test .\test\Marketplace-test.js` to only run test cases of the `Marketplace.sol` contract   
 
 ## Next steps?
 * Give more controle on an existing auction to his creator. Example:
@@ -131,7 +133,8 @@ You must also uncomment the commented lines:
   //   },
   // },
 ```
-Then, you can run this command: `npx hardhat run scripts/deploy.js --network ropsten`
+Then, you can run this command: `npx hardhat run scripts/deploy.js --network ropsten`  
+For more information, please check this tutorial: https://hardhat.org/tutorial/deploying-to-a-live-network.html 
 
 ## Documentation
 * Hardhat tutorials: https://hardhat.org/tutorial/
