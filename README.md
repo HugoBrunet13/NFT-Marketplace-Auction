@@ -106,5 +106,33 @@ Marketplace contract
   31 passing (9s)
 ```
 
+## Deployment
+
+The 3 contracts are deployed on Ropsten network:
+- **Marketplace:**  0x7DfA07f05d465ab73B536BfA493AEC7fed98ECE9
+https://ropsten.etherscan.io/address/0x7DfA07f05d465ab73B536BfA493AEC7fed98ECE9
+- **NFTCollection:** 0x37b97895638B00871c09602e2B7Cce062e9E0dCE
+https://ropsten.etherscan.io/address/0x37b97895638B00871c09602e2B7Cce062e9E0dCE
+- **ERC20 Token:** 0xA5264207375B3202B22401c8A08f7C152354E9a2
+https://ropsten.etherscan.io/address/0xA5264207375B3202B22401c8A08f7C152354E9a2
+
+
+To deploy, you must to edit the file `scripts/deploy.js` and add your personal KEY:
+```   
+const ALCHEMY_API_KEY = ""; // PUT YOUR KEY HERE
+const ROPSTEN_PRIVATE_KEY = ""; //PUT YOUR PRIVATE KEY HERE
+```
+You must also uncomment the commented lines:
+```
+  // networks: {
+  //   ropsten: {
+  //     url: `https://eth-ropsten.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
+  //     accounts: [`0x${ROPSTEN_PRIVATE_KEY}`],
+  //   },
+  // },
+```
+Then, you can run this command: `npx hardhat run scripts/deploy.js --network ropsten`
+
 ## Documentation
 * Hardhat tutorials: https://hardhat.org/tutorial/
+* OpenZepplin contracts: https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts/token
