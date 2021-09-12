@@ -3,8 +3,14 @@
 Basic **NFT Marketplace** which enables users to **list an ERC721 NFT for sales** by creating **new auctions**.   
 The creator of the auction must specify the ERC20 token he wants buyers to place new bids on his auction.
 
-**Bayers can bid** on available auctions and when the auction period is over, the **winner can claim his token**. 
+**Buyers can bid** on available auctions. **Their tokens will then be locked on the Marketplace contract**.   
+When the auction period is over, the **winner can claim his token**. This  will also trigger the transfer of the money locked in the marketplace contract to the creator of the auction wallet.  
 
+When an auction is created for an NFT, **the ownership of this NFT will be transfered from the creator of the auction to the Marketplace wallet**.   
+In case an auction **ends without any new bid**, the creator of the auction can **be refunded**.     
+If an auction is over but **the winner hasn't claimed his NFT yet**, the creator of the auction **can claim for his money**.  
+The payment tokens will then be transfered to the creator of the auction and the NFT will will be sent to the winner of the auction.  
+ 
 Most of the scenarios supported by this auction contract are covered in the testing file `test/Marketplace-test.js`. (see bellow an overview of the tests). 
 
 ## Structure of the project
