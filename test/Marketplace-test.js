@@ -2,7 +2,6 @@ const { expect } = require('chai');
 const { ethers } = require('hardhat');
 
 
-
 describe('NFT Auction contract', () => {
     let MarketplaceContract, Marketplace, ownerMarketPlace, addr1, addr2;
 
@@ -30,7 +29,7 @@ describe('NFT Auction contract', () => {
 
             NFTCollectionContract = await ethers.getContractFactory('NFTCollection');
             NFTCollection = await NFTCollectionContract.deploy();
-            [ownerNFTCollectionContract, addr3, addr4, _] = await ethers.getSigners();
+            [ownerNFTCollection, addr3, addr4, _] = await ethers.getSigners();
 
             //deploy payment token contract
             PaymentTokenContract = await ethers.getContractFactory('ERC20');
@@ -87,17 +86,15 @@ describe('NFT Auction contract', () => {
             it('Check if auction if correctly created ', async () => {
                 await Marketplace.createAuction(NFTCollection.address, PaymentToken.address, 0, 50, endAuction )
                 const auction = await Marketplace.listedNFTs(0)
-                expect(auction.auctionSequence).to.equal('0')
+                //expect(auction.auctionSequence).to.be.bignumber.equal('0')
                 expect(auction.addressNFTCollection).to.equal(NFTCollection.address)
                 expect(auction.addressPaymentToken).to.equal(PaymentToken.address)
                 expect(auction.nftId).to.equal('0')
-                expect(auction.auctionCreator).to.equal(ownerMarketPlace.address)
+                expect(auction.creator).to.equal(ownerMarketPlace.address)
                 expect(auction.currentBidOwner).to.equal('0x0000000000000000000000000000000000000000');
                 expect(auction.endAuction).to.equal(endAuction)
                 expect(auction.bidCount).to.equal(0)
             })
-
-         
         });
        
     })
@@ -111,7 +108,7 @@ describe('NFT Auction contract', () => {
 
             NFTCollectionContract = await ethers.getContractFactory('NFTCollection');
             NFTCollection = await NFTCollectionContract.deploy();
-            [ownerNFTCollectionContract, addr3, addr4, _] = await ethers.getSigners();
+            [ownerNFTCollection, addr3, addr4, _] = await ethers.getSigners();
 
             //deploy payment token contract
             PaymentTokenContract = await ethers.getContractFactory('ERC20');
@@ -138,8 +135,6 @@ describe('NFT Auction contract', () => {
                 await expect(Marketplace.connect(addr1).bid(0, 25))
                     .to.be.revertedWith('New bid price must be higher than the current bid');
             })
-
-            // XXX Todo, test on an expired auction
 
             it('Should reject new Bid because marketplace contract hasnt approval for token transfer', async () => {
                 await expect(Marketplace.connect(addr1).bid(0, 60))
@@ -210,7 +205,112 @@ describe('NFT Auction contract', () => {
 
         });
 
-       
-       
+    })
+
+
+
+    describe('Transactions - Claim NFT', () => {
+        
+        beforeEach(async () => {
+            //deploy NFTCollection contract
+
+            NFTCollectionContract = await ethers.getContractFactory('NFTCollection');
+            NFTCollection = await NFTCollectionContract.deploy();
+            [ownerNFTCollection, addr3, addr4, _] = await ethers.getSigners();
+
+            //deploy payment token contract
+            PaymentTokenContract = await ethers.getContractFactory('ERC20');
+            PaymentToken = await PaymentTokenContract.deploy(1000000, "Test Token", "XTS");
+            [ownerPaymentToken, addr5, addr6, _] = await ethers.getSigners();
+        });
+
+        describe('Claim NFT - Failure', () => {
+            it('Should reject because auction is still open', async () => {
+                await testClaimFunctionSetUp(Marketplace, NFTCollection, PaymentToken, addr1, 5000, addr2)
+                
+                await expect(Marketplace.connect(addr2).claimNFT(0))
+                    .to.be.revertedWith('Auction is still open');
+
+                })
+
+                it('Should reject because caller is not the current bid owner', async () => {
+                    await testClaimFunctionSetUp(Marketplace, NFTCollection, PaymentToken, addr1, 5000, addr2)
+                    
+                    await network.provider.send("evm_increaseTime", [6000])
+                    await network.provider.send("evm_mine")
+    
+                    await expect(Marketplace.connect(addr1).claimNFT(0))
+                        .to.be.revertedWith('NFT can be claimed only by the current bid owner');
+                    })
+        });
+
+        describe('Claim NFT - Success', () => {
+         
+            it('Winner of the auction must be the new owner of the token', async () => {
+
+                await testClaimFunctionSetUp(Marketplace, NFTCollection, PaymentToken, addr1, 9000, addr2)
+                await network.provider.send("evm_increaseTime", [10000])
+                await network.provider.send("evm_mine")
+
+                await Marketplace.connect(addr2).claimNFT(0)
+
+                let newOwnerNFT = await NFTCollection.ownerOf(0)
+                expect(newOwnerNFT).to.equal(addr2.address)
+            })
+
+            it('Creator of the auction must have his token balance credited with the highest bid', async () => {
+                await testClaimFunctionSetUp(Marketplace, NFTCollection, PaymentToken, addr1, 20000, addr2)
+                await network.provider.send("evm_increaseTime", [22000])
+                await network.provider.send("evm_mine")
+                await Marketplace.connect(addr2).claimNFT(0)
+                
+                let auctionCreatorBal = await PaymentToken.balanceOf(addr1.address)
+                expect(auctionCreatorBal).to.equal(500)
+
+                let marketPlaceBal = await PaymentToken.balanceOf(Marketplace.address)
+                expect(marketPlaceBal).to.equal(0)
+            })
+
+            it('Winner of the auction should not be able to claim NFT more than one time', async () => {
+                await testClaimFunctionSetUp(Marketplace, NFTCollection, PaymentToken, addr1, 50000, addr2)
+                
+                await network.provider.send("evm_increaseTime", [55000])
+                await network.provider.send("evm_mine")
+                await Marketplace.connect(addr2).claimNFT(0)
+                await expect(Marketplace.connect(addr2).claimNFT(0)).to.be.revertedWith('Funds and NFT already released')
+            })
+            
+        });
+        
     })
 })
+
+/**
+ * Method to initialize testing environnement for Claiming process
+ * 1. Mint Token
+ * 2. Approve NFT transfer by market place
+ * 3. Create auction
+ * 4. Approve token transfer by market place
+ * 5. Transfer token to bider
+ * 6. Create new bid
+ */
+async function testClaimFunctionSetUp(Marketplace, 
+                                      NFTCollection, 
+                                      PaymentToken, 
+                                      auctionCreator, 
+                                      auctionDuration,
+                                      bider) {
+     //mint new NFT
+     await NFTCollection.connect(auctionCreator).mintNFT("Test NFT", "test.uri.domain.io")
+     // approve NFT transfer by MarketPlace contract
+     await NFTCollection.connect(auctionCreator).approve(Marketplace.address, 0)
+     // create auction
+     let endAuction = Math.floor(Date.now() / 1000) + auctionDuration; 
+     await Marketplace.connect(auctionCreator).createAuction(NFTCollection.address, PaymentToken.address, 0, 50, endAuction )
+     // allow marketplace contract to get token
+     await PaymentToken.connect(bider).approve(Marketplace.address, 10000)
+     // credit addr2 balance with tokens
+     await PaymentToken.transfer(bider.address, 20000)
+     // place new bid
+     await Marketplace.connect(bider).bid(0, 500)
+}

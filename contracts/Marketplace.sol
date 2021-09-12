@@ -21,11 +21,12 @@ contract Marketplace  {
         address addressNFTCollection;                  
         address addressPaymentToken;
         uint256 nftId;
-        address auctionCreator;     
+        address creator;     
         address payable currentBidOwner;
         uint256 currentBidPrice;        
         uint256 endAuction;             
-        uint256 bidCount;          
+        uint256 bidCount;
+        bool isClaimed;        
     }
 
     // Array will all auctions
@@ -53,6 +54,18 @@ contract Marketplace  {
     event NewBidOnAuction(
         uint256 auctionIndex, 
         uint256 newBid
+    );
+
+    event NFTClaimed(
+        uint256 auctionIndex, 
+        uint256 nftId, 
+        address claimedBy
+    );
+
+    event TokensClaimed(
+        uint256 auctionIndex, 
+        uint256 nftId, 
+        address claimedBy
     );
 
     constructor (string memory _name) {
@@ -108,11 +121,12 @@ contract Marketplace  {
             addressNFTCollection: _addressNFTCollection,              
             addressPaymentToken: _addressPaymentToken,
             nftId: _nftId,
-            auctionCreator: msg.sender, 
+            creator: msg.sender, 
             currentBidOwner: currentBidOwner,
             currentBidPrice: _initialBid,
             endAuction: _endAuction,
-            bidCount: 0
+            bidCount: 0,
+            isClaimed: false
         });
 
         //update lists
@@ -127,7 +141,7 @@ contract Marketplace  {
         return auctionSequence;
     }
 
-    function isOpen(uint256 auctionIndex) private view returns (bool) {
+    function isOpen(uint256 auctionIndex) public view returns (bool) {
         Auction storage auction = allAuctions[auctionIndex];
         if(block.timestamp >= auction.endAuction)
             return false;
@@ -153,7 +167,7 @@ contract Marketplace  {
         require(auctionIndex < allAuctions.length, 'Invalid auction index'); // XXX Optimize
         Auction storage auction = allAuctions[auctionIndex];
         // check if auction exist
-        require(auction.auctionCreator != address(0), 'Invalid auction');
+        require(auction.creator != address(0), 'Invalid auction');
         // check if auction is still open
         require(isOpen(auctionIndex), "Auction is not open");
         
@@ -189,11 +203,27 @@ contract Marketplace  {
 
         return true;
         
+    }  
+
+    function claimNFT(uint256 auctionIndex) external {
+        require(auctionIndex < allAuctions.length, 'Invalid auction index'); // XXX Optimize
+        require(!isOpen(auctionIndex), 'Auction is still open');
+
+        Auction storage auction = allAuctions[auctionIndex];
+        
+        require(!auction.isClaimed, 'Funds and NFT already released');
+        require(auction.currentBidOwner == msg.sender, "NFT can be claimed only by the current bid owner");
+
+        NFTCollection nftCollection = NFTCollection(auction.addressNFTCollection);
+        require(nftCollection.transferNFTFrom(auction.creator, auction.currentBidOwner, 0));
+
+        ERC20 paymentToken = ERC20(auction.addressPaymentToken);
+        require(paymentToken.transfer(auction.creator, auction.currentBidPrice));
+
+        auction.isClaimed = true;
+        emit NFTClaimed(auctionIndex, auction.nftId, msg.sender);
     }
 
-
-    // claim() 
-    // get all auction + index?
 
 
 }
