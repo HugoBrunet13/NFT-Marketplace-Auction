@@ -3,6 +3,8 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
+import 'hardhat/console.sol';
+
 contract NFTCollection is ERC721 {
 
     struct NFT {
@@ -31,5 +33,10 @@ contract NFTCollection is ERC721 {
         
         emit Mint(index, msg.sender);
         return index;
+    }
+
+    function transferNFTFrom(address from, address to, uint256 tokenId) public virtual returns(bool){
+        safeTransferFrom(from, to, tokenId);
+        return true;            
     }
 }
