@@ -224,6 +224,25 @@ contract Marketplace  {
         emit NFTClaimed(auctionIndex, auction.nftId, msg.sender);
     }
 
+    function claimToken(uint256 auctionIndex) external {
+        require(auctionIndex < allAuctions.length, 'Invalid auction index'); // XXX Optimize
+        require(!isOpen(auctionIndex), 'Auction is still open');
+
+        Auction storage auction = allAuctions[auctionIndex];
+
+        require(!auction.isClaimed, 'Funds and NFT already released');
+        require(auction.creator == msg.sender, "Tokens can be claimed only by the creator of the auction");
+
+        ERC20 paymentToken = ERC20(auction.addressPaymentToken);
+        paymentToken.transfer(auction.creator, auction.currentBidPrice);
+
+        NFTCollection nftCollection = NFTCollection(auction.addressNFTCollection);
+        nftCollection.transferFrom(auction.creator, auction.currentBidOwner, auction.nftId);
+        
+        auction.isClaimed = true;
+        emit TokensClaimed(auctionIndex, auction.nftId, msg.sender);
+    }
+
 
 
 }

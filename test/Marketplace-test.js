@@ -246,7 +246,7 @@ describe('NFT Auction contract', () => {
 
         describe('Claim NFT - Success', () => {
          
-            it('Winner of the auction must be the new owner of the token', async () => {
+            it('Winner of the auction must be the new owner of the NFT', async () => {
 
                 await testClaimFunctionSetUp(Marketplace, NFTCollection, PaymentToken, addr1, 9000, addr2)
                 await network.provider.send("evm_increaseTime", [10000])
@@ -283,10 +283,86 @@ describe('NFT Auction contract', () => {
         });
         
     })
+
+
+    describe('Transactions - Claim Token', () => {
+        
+        beforeEach(async () => {
+            //deploy NFTCollection contract
+
+            NFTCollectionContract = await ethers.getContractFactory('NFTCollection');
+            NFTCollection = await NFTCollectionContract.deploy();
+            [ownerNFTCollection, addr3, addr4, _] = await ethers.getSigners();
+
+            //deploy payment token contract
+            PaymentTokenContract = await ethers.getContractFactory('ERC20');
+            PaymentToken = await PaymentTokenContract.deploy(1000000, "Test Token", "XTS");
+            [ownerPaymentToken, addr5, addr6, _] = await ethers.getSigners();
+        });
+
+        describe('Claim Token - Failure', () => {
+            it('Should reject because auction is still open', async () => {
+                await testClaimFunctionSetUp(Marketplace, NFTCollection, PaymentToken, addr1, 1000000, addr2)
+                
+                await expect(Marketplace.connect(addr1).claimToken(0))
+                    .to.be.revertedWith('Auction is still open');
+
+                })
+
+                it('Should reject because caller is not the creator of the auction', async () => {
+                    await testClaimFunctionSetUp(Marketplace, NFTCollection, PaymentToken, addr1, 1020000, addr2)
+                    
+                    await network.provider.send("evm_increaseTime", [1050000])
+                    await network.provider.send("evm_mine")
+    
+                    await expect(Marketplace.connect(addr2).claimToken(0))
+                        .to.be.revertedWith('Tokens can be claimed only by the creator of the auction');
+                    })
+        });
+
+        describe('Claim Token - Success', () => {
+         
+            it('Winner of the auction must be the new owner of the NFT', async () => {
+
+                await testClaimFunctionSetUp(Marketplace, NFTCollection, PaymentToken, addr1, 1950000, addr2)
+                await network.provider.send("evm_increaseTime", [2000000])
+                await network.provider.send("evm_mine")
+
+                await Marketplace.connect(addr1).claimToken(0)
+
+                let newOwnerNFT = await NFTCollection.ownerOf(0)
+                expect(newOwnerNFT).to.equal(addr2.address)
+            })
+
+            it('Creator of the auction must have his token balance credited with the highest bid', async () => {
+                await testClaimFunctionSetUp(Marketplace, NFTCollection, PaymentToken, addr1, 3950000, addr2)
+                await network.provider.send("evm_increaseTime", [4000000])
+                await network.provider.send("evm_mine")
+                await Marketplace.connect(addr1).claimToken(0)
+                
+                let auctionCreatorBal = await PaymentToken.balanceOf(addr1.address)
+                expect(auctionCreatorBal).to.equal(500)
+
+                let marketPlaceBal = await PaymentToken.balanceOf(Marketplace.address)
+                expect(marketPlaceBal).to.equal(0)
+            })
+
+            it('Winner of the auction should not be able to claim NFT more than one time', async () => {
+                await testClaimFunctionSetUp(Marketplace, NFTCollection, PaymentToken, addr1, 7950000, addr2)
+                
+                await network.provider.send("evm_increaseTime", [8000000])
+                await network.provider.send("evm_mine")
+                await Marketplace.connect(addr1).claimToken(0)
+                await expect(Marketplace.connect(addr1).claimToken(0)).to.be.revertedWith('Funds and NFT already released')
+            })
+            
+        });
+        
+    })
 })
 
 /**
- * Method to initialize testing environnement for Claiming process
+ * Method to initialize testing environnement for Claiming
  * 1. Mint Token
  * 2. Approve NFT transfer by market place
  * 3. Create auction
