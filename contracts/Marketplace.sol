@@ -52,6 +52,10 @@ contract Marketplace is IERC721Receiver {
     // an auction claimed for his money
     event TokensClaimed(uint256 auctionIndex, uint256 nftId, address claimedBy);
 
+    // Public event to notify that an NFT has been refunded to the
+    // creator of an auction
+    event NFTRefunded(uint256 auctionIndex, uint256 nftId, address claimedBy);
+
     // constructor of the contract
     constructor(string memory _name) {
         name = _name;
@@ -255,15 +259,15 @@ contract Marketplace is IERC721Receiver {
     }
 
     /**
-     * Function used by the winner of an auction 
-     * to withdraw his NFT. 
-     * When the NFT is withdrawan, the creator of the 
+     * Function used by the winner of an auction
+     * to withdraw his NFT.
+     * When the NFT is withdrawn, the creator of the
      * auction will receive the payment tokens in his wallet
      * @param _auctionIndex Index of auction
      */
     function claimNFT(uint256 _auctionIndex) external {
-        require(_auctionIndex < allAuctions.length, "Invalid auction index"); 
-        
+        require(_auctionIndex < allAuctions.length, "Invalid auction index");
+
         // Check if the auction is closed
         require(!isOpen(_auctionIndex), "Auction is still open");
 
@@ -276,11 +280,11 @@ contract Marketplace is IERC721Receiver {
             "NFT can be claimed only by the current bid owner"
         );
 
-        // Get NFT collection contract 
+        // Get NFT collection contract
         NFTCollection nftCollection = NFTCollection(
             auction.addressNFTCollection
         );
-        // Transfer NFT from marketplace contract 
+        // Transfer NFT from marketplace contract
         // to the winner address
         require(
             nftCollection.transferNFTFrom(
@@ -302,15 +306,15 @@ contract Marketplace is IERC721Receiver {
     }
 
     /**
-     * Function used by the creator of an auction 
+     * Function used by the creator of an auction
      * to withdraw his tokens when the auction is closed
-     * When the Token are withdrawn, the winned of the 
+     * When the Token are withdrawn, the winned of the
      * auction will receive the NFT in his walled
      * @param _auctionIndex Index of the auction
      */
     function claimToken(uint256 _auctionIndex) external {
         require(_auctionIndex < allAuctions.length, "Invalid auction index"); // XXX Optimize
-        
+
         // Check if the auction is closed
         require(!isOpen(_auctionIndex), "Auction is still open");
 
@@ -342,6 +346,48 @@ contract Marketplace is IERC721Receiver {
         paymentToken.transfer(auction.creator, auction.currentBidPrice);
 
         emit TokensClaimed(_auctionIndex, auction.nftId, msg.sender);
+    }
+
+    /**
+     * Function used by the creator of an auction
+     * to get his NFT back in case the auction is closed
+     * but there is no bider to make the NFT won't stay locked
+     * in the contract
+     * @param _auctionIndex Index of the auction
+     */
+    function refund(uint256 _auctionIndex) external {
+        require(_auctionIndex < allAuctions.length, "Invalid auction index");
+
+        // Check if the auction is closed
+        require(!isOpen(_auctionIndex), "Auction is still open");
+
+        // Get auction
+        Auction storage auction = allAuctions[_auctionIndex];
+
+        // Check if the caller is the creator of the auction
+        require(
+            auction.creator == msg.sender,
+            "Tokens can be claimed only by the creator of the auction"
+        );
+
+        require(
+            auction.currentBidOwner == address(0),
+            "Existing bider for this auction"
+        );
+
+        // Get NFT Collection contract
+        NFTCollection nftCollection = NFTCollection(
+            auction.addressNFTCollection
+        );
+        // Transfer NFT back from marketplace contract
+        // to the creator of the auction
+        nftCollection.transferFrom(
+            address(this),
+            auction.creator,
+            auction.nftId
+        );
+
+        emit NFTRefunded(_auctionIndex, auction.nftId, msg.sender);
     }
 
     function onERC721Received(
