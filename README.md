@@ -46,6 +46,8 @@ Artifact files for each contracts
     * Cancel auction with automatic refund
 * Enable auction creator to accept multiple ERC20 Token for payment
 * Build DApp to interact with the marketplace 
+* Improve ERC721 implementation
+* Optmize unit tests of marketplace contract
 
 ## Testing
 
@@ -119,7 +121,7 @@ https://ropsten.etherscan.io/address/0x37b97895638B00871c09602e2B7Cce062e9E0dCE
 https://ropsten.etherscan.io/address/0xA5264207375B3202B22401c8A08f7C152354E9a2
 
 
-To deploy, you must to edit the file `scripts/deploy.js` and add your personal KEY:
+To deploy, you must edit the file `scripts/deploy.js` and add your personal KEY:
 ```   
 const ALCHEMY_API_KEY = ""; // PUT YOUR KEY HERE
 const ROPSTEN_PRIVATE_KEY = ""; //PUT YOUR PRIVATE KEY HERE
