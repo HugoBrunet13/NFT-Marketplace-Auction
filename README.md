@@ -1,12 +1,16 @@
 # NFT-Marketplace
 
-Basic **NFT Marketplace** which enables users to **list an ERC721 NFT for sales** by creation **new auctions**.   
-The creator of the auction must specify the ERC20 token he wants buyers to place new bids. 
+Basic **NFT Marketplace** which enables users to **list an ERC721 NFT for sales** by creating **new auctions**.   
+The creator of the auction must specify the ERC20 token he wants buyers to place new bids on his auction.
 
 **Bayers can bid** on available auctions and when the auction period is over, the **winner can claim his token**. 
 
-Most of the scenarios supported by this auction contract are covered in the testing file `test/Marketplace-test.js`. (see bellow an overvoew of the tests). 
+Most of the scenarios supported by this auction contract are covered in the testing file `test/Marketplace-test.js`. (see bellow an overview of the tests). 
 
+## Description of the logic:
+1. User1 mint new NFT
+2. User1 create a new auction for this NFT
+    a. 
 ## Structure of the project
 ### 1. Smart contracts - `contract/` 
 Smart contract are implemented with **Solidity** and require the **version 0.8.0** of the compiler. 
@@ -14,12 +18,11 @@ Smart contract are implemented with **Solidity** and require the **version 0.8.0
 Basic ERC20 Token contract that will be used by buyers to place new bid on an auction
 
 2. `NFTCollection.sol`  
-ERC721 Token contract inherited from the openZepplin library: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol
-This contract will be use to mint new NFT, that will then be referenced in the auction created on the marketplace
+ERC721 Token contract inherited from the openZepplin library: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol  
+This contract will be used to **mint new NFT**, that will then be **referenced in the auction created on the marketplace**
 
 3. `Marketplace.sol`  
-The Marketplace where owner of NFTs will be able to create new auction and buyer will be able to place new big on existing auction.  
-All the logic of the market place is defined on this contract. 
+The Marketplace contract, main file of the project, where owners of NFTs will be able to create new auctions and buyer will be able to place new bid in order to purchase NFT.  
 
 ### 2. Tests - `test/`
 Unit tests for `NFTCollection.sol` and `Marketplace.sol` contracts. 
@@ -38,60 +41,73 @@ Artifact files for each contracts
 1. ` npm install`
 2. `npx hardhat compile` (to compile contracts)
 3. `npx hardhat test` (to run existing unit tests)
+
+## Next steps?
+* Give more controle on an existing auction to his creator. Example:
+    * Update endtime of an existing auction 
+    * Cancel auction with automatic refund
+* Enable auction creator to accept multiple ERC20 Token for payment
+* Build DApp to interact with the marketplace 
+
 ## Testing
 
 Marketplace and NFTCollection contract have been tested using **Hardhat** framework and **Chai** library.   
 To run the test, please make sure all dependencies are installed please type: `npx hardhat test`.
 
-Bellow on overview of the tests for `Marketplace.sol` contract
+Bellow an overview of the tests for `Marketplace.sol` contract
 
 ```
 Marketplace contract
     Deployment
-    √ Should set the correct name (38ms)
-    √ Should intialize auction sequence to 0
+      √ Should set the correct name
+      √ Should intialize auction sequence to 0
     Transactions - Create Auction
-    Create Auction - Failure
-        √ Should reject Auction because the NFT collection contract address is invalid (55ms)
+      Create Auction - Failure
+        √ Should reject Auction because the NFT collection contract address is invalid
         √ Should reject Auction because the Payment token contract address is invalid
         √ Should reject Auction because the end date of the auction is invalid
         √ Should reject Auction because the initial bid price is invalid
         √ Should reject Auction because caller is not the owner of the NFT
         √ Should reject Auction because owner of the NFT hasnt approved ownership transfer
-    Create Auction - Success
-        √ Check if auction is created
+      Create Auction - Success
+        √ Check if auction is created (61ms)
         √ Owner of NFT should be the marketplace contract 
-    Transactions - Place new Bid on an auction
-    Place new Bid on an auction - Failure
+    Transactions - Place new Bid on auction
+      Place new Bid on an auction - Failure
         √ Should reject new Bid because the auction index is invalid
         √ Should reject new Bid because the new bid amount is invalid
         √ Should reject new Bid because caller is the creator of the auction
         √ Should reject new Bid because marketplace contract has no approval for token transfer
-        √ Should reject new Bid because new bider has not enought balances (40ms)
-    Place new Bid on an auction - Success
+        √ Should reject new Bid because new bider has not enought balances (39ms)
+      Place new Bid on an auction - Success
         √ Token balance of new bider must be debited with the bid amount
         √ Token balance of Marketplace contract must be updated with new bid amount
         √ Auction info are correctly updated
         √ Current bid owner must be refunded after a new successful bid is placed (72ms)
     Transactions - Claim NFT
-    Claim NFT - Failure
-        √ Should reject because auction is still open (109ms)
-        √ Should reject because caller is not the current bid owner (128ms)
-    Claim NFT - Success
-        √ Winner of the auction must be the new owner of the NFT (150ms)
-        √ Creator of the auction must have his token balance credited with the highest bid amount (153ms)
-        √ Winner of the auction should not be able to claim NFT more than one time (144ms)
+      Claim NFT - Failure
+        √ Should reject because auction is still open (125ms)
+        √ Should reject because caller is not the current bid owner (111ms)
+      Claim NFT - Success
+        √ Winner of the auction must be the new owner of the NFT (152ms)
+        √ Creator of the auction must have his token balance credited with the highest bid amount (151ms)
+        √ Winner of the auction should not be able to claim NFT more than one time (158ms)
     Transactions - Claim Token
-    Claim Token - Failure
+      Claim Token - Failure
         √ Should reject because auction is still open (127ms)
-        √ Should reject because caller is not the creator of the auction (111ms)
-    Claim Token - Success
-        √ Winner of the auction must be the new owner of the NFT (135ms)
-        √ Creator of the auction must have his token balance credited with the highest bid amount (154ms)
-        √ Creator of the auction should not be able to claim his token more than one time (172ms)
+        √ Should reject because caller is not the creator of the auction (125ms)
+      Claim Token - Success
+        √ Winner of the auction must be the new owner of the NFT (152ms)
+        √ Creator of the auction must have his token balance credited with the highest bid amount (151ms)
+        √ Creator of the auction should not be able to claim his token more than one time (158ms)
+    Transactions - Refund NFT
+      Refund NFT - Failure
+        √ Should reject because there is already a bider on the auction (140ms)
+      Refund NFT - Success
+        √ Creator of the auction must be again the owner of the NFT (89ms)
 
 
-29 passing (8s)
+  31 passing (9s)
 ```
 
 ## Documentation
