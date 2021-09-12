@@ -34,7 +34,7 @@ Deployment scripts
 
 ## How to run?
 ### Stack
-* NodeJS 
+* NodeJS (v >= 12.0.0)
 * npm 
 * Hardhat 
 * Solidity (v0.8.0)
