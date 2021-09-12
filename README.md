@@ -23,8 +23,8 @@ The Marketplace contract, main file of the project, where owners of NFTs will be
 ### 2. Tests - `test/`
 Unit tests for `NFTCollection.sol` and `Marketplace.sol` contracts. 
 
-### 3. Artifact - `artifacts/`
-Artifact files for each contracts 
+### 3. Scripts - `scripts/`
+Deployment scripts
 
 ## How to run?
 ### Stack
@@ -35,7 +35,7 @@ Artifact files for each contracts
 
 ### Install dependencies and run tests
 1. ` npm install`
-2. `npx hardhat compile` (to compile contracts)
+2. `npx hardhat compile` (to compile contracts and generate artifacts)
 3. `npx hardhat test` (to run existing unit tests)  
 
 **NB:** Run  `npx hardhat test .\test\Marketplace-test.js` to only run test cases of the `Marketplace.sol` contract   
