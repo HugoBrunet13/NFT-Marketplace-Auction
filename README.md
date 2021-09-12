@@ -7,10 +7,6 @@ The creator of the auction must specify the ERC20 token he wants buyers to place
 
 Most of the scenarios supported by this auction contract are covered in the testing file `test/Marketplace-test.js`. (see bellow an overview of the tests). 
 
-## Description of the logic:
-1. User1 mint new NFT
-2. User1 create a new auction for this NFT
-    a. 
 ## Structure of the project
 ### 1. Smart contracts - `contract/` 
 Smart contract are implemented with **Solidity** and require the **version 0.8.0** of the compiler. 
