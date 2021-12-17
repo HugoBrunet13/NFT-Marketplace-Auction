@@ -1,15 +1,15 @@
 # NFT-Marketplace
 
-Basic **NFT Marketplace** which enables users to **list an ERC721 NFT for sales** by creating **new auctions**.   
-The creator of the auction must specify the ERC20 token he wants buyers to place new bids on his auction.
+Basic **NFT Marketplace** which enables NFT owners to **list an ERC721 NFT for sales** by creating **new auctions**.   
+The creator of the auction must specify in which currency (ERC20 token) he wants buyers to place new bids on his auction.
 
 **Buyers can bid** on available auctions. **Their tokens will then be locked on the Marketplace contract**.   
-When the auction period is over, the **winner can claim his token**. This  will also trigger the transfer of the money locked in the marketplace contract to the creator of the auction wallet.  
+When the auction period is over, the **winner can claim his reward (the NFT)**. This  will also trigger the transfer of the money locked in the marketplace contract into the wallet of the creator of the auction.  
 
 When an auction is created for an NFT, **the ownership of this NFT will be transfered from the creator of the auction to the Marketplace wallet**.   
 In case an auction **ends without any new bid**, the creator of the auction can **be refunded**.     
 If an auction is over but **the winner hasn't claimed his NFT yet**, the creator of the auction **can claim for his money**.  
-The payment tokens will then be transfered to the creator of the auction and the NFT will will be sent to the winner of the auction.  
+The payment tokens will then be transfered to the creator of the auction and the NFT will be sent to the winner of the auction.  
  
 Most of the scenarios supported by this auction contract are covered in the testing file `test/Marketplace-test.js`. (see bellow an overview of the tests). 
 
@@ -24,7 +24,7 @@ ERC721 Token contract inherited from the openZepplin library: https://github.com
 This contract will be used to **mint new NFT**, that will then be **referenced in the auction created on the marketplace**
 
 3. `Marketplace.sol`  
-The Marketplace contract, main file of the project, where owners of NFTs will be able to create new auctions and buyer will be able to place new bid in order to purchase NFT.  
+The Marketplace contract, main file of the project, where owners of NFTs can create new auctions and buyers will be able to place new bid.
 
 ### 2. Tests - `test/`
 Unit tests for `NFTCollection.sol` and `Marketplace.sol` contracts. 
@@ -47,7 +47,7 @@ Deployment scripts
 **NB:** Run  `npx hardhat test .\test\Marketplace-test.js` to only run test cases of the `Marketplace.sol` contract   
 
 ## Next steps?
-* Give more controle on an existing auction to his creator. Example:
+* Give more control on an existing auction to his creator. Example:
     * Update endtime of an existing auction 
     * Cancel auction with automatic refund
 * Enable auction creator to accept multiple ERC20 Token for payment
@@ -57,10 +57,10 @@ Deployment scripts
 
 ## Testing
 
-Marketplace and NFTCollection contract have been tested using **Hardhat** framework and **Chai** library.   
-To run the test, please make sure all dependencies are installed please type: `npx hardhat test`.
+Marketplace and NFTCollection contracts have been tested using **Hardhat** framework and **Chai** library.   
+To run the test, please make sure all dependencies are installed and use the following command: `npx hardhat test`.
 
-Bellow an overview of the tests for `Marketplace.sol` contract
+Below an overview of the tests for the `Marketplace.sol` contract
 
 ```
 Marketplace contract
@@ -127,7 +127,7 @@ https://ropsten.etherscan.io/address/0x37b97895638B00871c09602e2B7Cce062e9E0dCE
 https://ropsten.etherscan.io/address/0xA5264207375B3202B22401c8A08f7C152354E9a2
 
 
-To deploy, you must edit the file `scripts/deploy.js` and add your personal KEY:
+To deploy, you need to edit the file `scripts/deploy.js` and add your personal KEY:
 ```   
 const ALCHEMY_API_KEY = ""; // PUT YOUR KEY HERE
 const ROPSTEN_PRIVATE_KEY = ""; //PUT YOUR PRIVATE KEY HERE
