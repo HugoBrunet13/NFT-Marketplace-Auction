@@ -123,7 +123,7 @@ contract Marketplace is IERC721Receiver {
         );
 
         // Lock NFT in Marketplace contract
-        require(nftCollection.transferNFTFrom(msg.sender, address(this), 0));
+        require(nftCollection.transferNFTFrom(msg.sender, address(this), _nftId));
 
         //Casting from address to address payable
         address payable currentBidOwner = payable(address(0));
