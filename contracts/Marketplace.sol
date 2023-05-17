@@ -1,9 +1,10 @@
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: GPL-3.0
+
+pragma solidity ^0.8.9;
 
 import "./ERC20.sol";
 import "./NFTCollection.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
-import "hardhat/console.sol"; //For debugging only
 
 contract Marketplace is IERC721Receiver {
     // Name of the marketplace
@@ -123,7 +124,9 @@ contract Marketplace is IERC721Receiver {
         );
 
         // Lock NFT in Marketplace contract
-        require(nftCollection.transferNFTFrom(msg.sender, address(this), _nftId));
+        require(
+            nftCollection.transferNFTFrom(msg.sender, address(this), _nftId)
+        );
 
         //Casting from address to address payable
         address payable currentBidOwner = payable(address(0));
@@ -176,11 +179,9 @@ contract Marketplace is IERC721Receiver {
      * for a specific auction
      * @param _auctionIndex Index of the auction
      */
-    function getCurrentBidOwner(uint256 _auctionIndex)
-        public
-        view
-        returns (address)
-    {
+    function getCurrentBidOwner(
+        uint256 _auctionIndex
+    ) public view returns (address) {
         require(_auctionIndex < allAuctions.length, "Invalid auction index");
         return allAuctions[_auctionIndex].currentBidOwner;
     }
@@ -190,11 +191,9 @@ contract Marketplace is IERC721Receiver {
      * for a specific auction
      * @param _auctionIndex Index of the auction
      */
-    function getCurrentBid(uint256 _auctionIndex)
-        public
-        view
-        returns (uint256)
-    {
+    function getCurrentBid(
+        uint256 _auctionIndex
+    ) public view returns (uint256) {
         require(_auctionIndex < allAuctions.length, "Invalid auction index");
         return allAuctions[_auctionIndex].currentBidPrice;
     }
@@ -204,10 +203,10 @@ contract Marketplace is IERC721Receiver {
      * @param _auctionIndex Index of auction
      * @param _newBid New bid price
      */
-    function bid(uint256 _auctionIndex, uint256 _newBid)
-        external
-        returns (bool)
-    {
+    function bid(
+        uint256 _auctionIndex,
+        uint256 _newBid
+    ) external returns (bool) {
         require(_auctionIndex < allAuctions.length, "Invalid auction index");
         Auction storage auction = allAuctions[_auctionIndex];
 
