@@ -1,5 +1,7 @@
 # NFT-Marketplace
 
+_This project has been developed using **Hardhat** and **Typescript**._
+
 Basic **NFT Marketplace** which enables NFT owners to **list an ERC721 NFT for sales** by creating **new auctions**.   
 The creator of the auction must specify in which currency (ERC20 token) he wants buyers to place new bids on his auction.
 
@@ -11,7 +13,7 @@ In case an auction **ends without any new bid**, the creator of the auction can 
 If an auction is over but **the winner hasn't claimed his NFT yet**, the creator of the auction **can claim for his money**.  
 The payment tokens will then be transfered to the creator of the auction and the NFT will be sent to the winner of the auction.  
  
-Most of the scenarios supported by this auction contract are covered in the testing file `test/Marketplace-test.js`. (see bellow an overview of the tests). 
+Most of the scenarios supported by this auction contract are covered in the testing file `test/Marketplace.test.ts`. (see bellow an overview of the tests). 
 
 ## Structure of the project
 ### 1. Smart contracts - `contract/` 
@@ -40,11 +42,11 @@ Deployment scripts
 * Solidity (v0.8.0)
 
 ### Install dependencies and run tests
-1. ` npm install`
+1. `npm install`
 2. `npx hardhat compile` (to compile contracts and generate artifacts)
 3. `npx hardhat test` (to run existing unit tests)  
 
-**NB:** Run  `npx hardhat test .\test\Marketplace-test.js` to only run test cases of the `Marketplace.sol` contract   
+**NB:** Run  `npx hardhat test .\test\Marketplace.test.ts` to only run test cases of the `Marketplace.sol` contract   
 
 ## Next steps?
 * Give more control on an existing auction to his creator. Example:
@@ -118,31 +120,27 @@ Marketplace contract
 
 ## Deployment
 
-The 3 contracts are deployed on Ropsten network:
-- **Marketplace:**  0x7DfA07f05d465ab73B536BfA493AEC7fed98ECE9
-https://ropsten.etherscan.io/address/0x7DfA07f05d465ab73B536BfA493AEC7fed98ECE9
-- **NFTCollection:** 0x37b97895638B00871c09602e2B7Cce062e9E0dCE
-https://ropsten.etherscan.io/address/0x37b97895638B00871c09602e2B7Cce062e9E0dCE
-- **ERC20 Token:** 0xA5264207375B3202B22401c8A08f7C152354E9a2
-https://ropsten.etherscan.io/address/0xA5264207375B3202B22401c8A08f7C152354E9a2
+This project can be tested using Sepolia testnet and Infura.   
+To deploy, you must first create a `.env` file and add 2 keys:
+```
+# .env 
+WALLET_PRIVATE_KEY=<YOUR SEPOLIA WALLET PRIVATE KEY>
+INFURA_API_KEY=<YOUR INFURA API KEY>
+```
 
+Then on `hardhat.config.ts`, uncomment the following lines:
+```
+    // sepolia: {
+    //   url: `https://sepolia.infura.io/v3/${INFURA_API_KEY}`, 
+    //   accounts: [SEPOLIA_PRIVATE_KEY? SEPOLIA_PRIVATE_KEY : ""]
+    // }
+```
 
-To deploy, you need to edit the file `scripts/deploy.js` and add your personal KEY:
-```   
-const ALCHEMY_API_KEY = ""; // PUT YOUR KEY HERE
-const ROPSTEN_PRIVATE_KEY = ""; //PUT YOUR PRIVATE KEY HERE
-```
-You must also uncomment the commented lines:
-```
-  // networks: {
-  //   ropsten: {
-  //     url: `https://eth-ropsten.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
-  //     accounts: [`0x${ROPSTEN_PRIVATE_KEY}`],
-  //   },
-  // },
-```
-Then, you can run this command: `npx hardhat run scripts/deploy.js --network ropsten`  
-For more information, please check this tutorial: https://hardhat.org/tutorial/deploying-to-a-live-network.html 
+Then, you can run this command: `npx hardhat run scripts\Marketplace.deploy.ts --network sepolia`  
+
+Make sure you have enough eth faucets before deploying. 
+For more information, please check this tutorial: https://hardhat.org/tutorial/deploying-to-a-live-network.html
+
 
 ## Documentation
 * Hardhat tutorials: https://hardhat.org/tutorial/
