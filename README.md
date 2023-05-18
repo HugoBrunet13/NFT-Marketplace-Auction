@@ -1,6 +1,11 @@
-# NFT-Marketplace
+# NFT-Marketplace [![Hardhat][hardhat-badge]][hardhat] [![typescript][typescript-badge]][typescript]  [![License: MIT][license-badge]][license]
 
-_This project has been developed using **Hardhat** and **Typescript**._
+[hardhat]: https://hardhat.org/
+[hardhat-badge]: https://img.shields.io/badge/Built%20with-Hardhat-FFDB1C.svg
+[license]: https://opensource.org/licenses/MIT
+[license-badge]: https://img.shields.io/badge/License-MIT-blue.svg
+[typescript]: https://www.typescriptlang.org/
+[typescript-badge]: https://badgen.net/badge/icon/typescript?icon=typescript&label
 
 Basic **NFT Marketplace** which enables NFT owners to **list an ERC721 NFT for sales** by creating **new auctions**.   
 The creator of the auction must specify in which currency (ERC20 token) he wants buyers to place new bids on his auction.
