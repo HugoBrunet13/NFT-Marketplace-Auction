@@ -22,7 +22,7 @@ Most of the scenarios supported by this auction contract are covered in the test
 
 ## Structure of the project
 ### 1. Smart contracts - `contract/` 
-Smart contract are implemented with **Solidity** and require the **version 0.8.0** of the compiler. 
+Smart contract are implemented with **Solidity** and require the **version 0.8.9** of the compiler. 
 1. `ERC20.sol`   
 Basic ERC20 Token contract that will be used by buyers to place new bid on an auction
 
@@ -44,7 +44,7 @@ Deployment scripts
 * NodeJS (v >= 12.0.0)
 * npm 
 * Hardhat 
-* Solidity (v0.8.0)
+* Solidity (v0.8.9)
 
 ### Install dependencies and run tests
 1. `npm install`
