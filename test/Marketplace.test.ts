@@ -137,7 +137,7 @@ describe("Marketplace contract tests", () => {
         deployNFTMarketplaceFixture.bind(null, false)
       );
 
-      expect(await Marketplace.index()).to.equal(0);
+      expect(await Marketplace.index()).to.equal(3);
     });
   });
 
